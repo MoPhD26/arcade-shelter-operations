@@ -1,0 +1,28 @@
+// Occupancy within capacity
+// Profile: Attribute rule (constraint)
+// Used in: ArcGIS Pro geodatabase, triggers on insert and update
+// Returns: True to allow the edit, or a dictionary with an errorMessage to block it
+// Fields: CAPACITY, OCCUPANCY
+//
+// Blocks impossible numbers at the database, whatever app the edit comes from.
+
+var capacity = $feature.CAPACITY
+var occupancy = $feature.OCCUPANCY
+
+if (!IsEmpty(capacity) && capacity <= 0) {
+  return { errorMessage: "Capacity must be greater than zero." }
+}
+
+if (IsEmpty(capacity) || IsEmpty(occupancy)) {
+  return true
+}
+
+if (occupancy < 0) {
+  return { errorMessage: "Occupancy cannot be negative." }
+}
+
+if (occupancy > capacity) {
+  return { errorMessage: `Occupancy (${occupancy}) cannot exceed capacity (${capacity}).` }
+}
+
+return true

@@ -1,0 +1,21 @@
+// Full status check
+// Profile: Attribute rule (validation)
+// Used in: ArcGIS Pro geodatabase, run on demand with Evaluate Rules
+// Returns: True when valid, false to create an error for review
+// Fields: STATUS, CAPACITY, OCCUPANCY
+//
+// A shelter marked Full while under 90 percent occupied is probably out of
+// date. This is a judgment call, so it is a validation rule (flag it) and
+// not a constraint (block it).
+
+if (Upper(Trim(DefaultValue($feature.STATUS, ""))) != "FULL") {
+  return true
+}
+
+var capacity = $feature.CAPACITY
+var occupancy = $feature.OCCUPANCY
+if (IsEmpty(capacity) || capacity <= 0 || IsEmpty(occupancy)) {
+  return false
+}
+
+return occupancy >= 0.9 * capacity

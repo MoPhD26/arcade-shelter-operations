@@ -1,0 +1,19 @@
+// Normalize status
+// Profile: Field calculation
+// Used in: ArcGIS Pro Calculate Field and Map Viewer field calculation on STATUS
+// Returns: Text. The standard spelling of the status, or the original value if unknown
+// Fields: STATUS
+//
+// Fixes case and spacing ("  full " becomes "Full"). Unknown values are left
+// as they are so a person can review them, instead of being guessed.
+
+var allowed = ["Open", "Closed", "Standby", "Full"]
+var raw = Trim(DefaultValue($feature.STATUS, ""))
+
+for (var i in allowed) {
+  if (Upper(allowed[i]) == Upper(raw)) {
+    return allowed[i]
+  }
+}
+
+return IIf(raw == "", null, raw)

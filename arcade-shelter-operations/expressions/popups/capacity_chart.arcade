@@ -1,0 +1,31 @@
+// Capacity chart
+// Profile: Popup element (Arcade content)
+// Used in: Map Viewer popups
+// Returns: Dictionary. A media element with a pie chart of occupied and open beds
+// Fields: CAPACITY, OCCUPANCY
+
+var capacity = $feature.CAPACITY
+var occupancy = $feature.OCCUPANCY
+
+if (IsEmpty(capacity) || capacity <= 0 || IsEmpty(occupancy)) {
+  return {
+    type: "text",
+    text: "<p><i>Capacity chart unavailable until capacity and occupancy are reported.</i></p>"
+  }
+}
+
+var occupied = Min(occupancy, capacity)
+
+return {
+  type: "media",
+  title: "Bed availability",
+  attributes: {
+    Occupied: occupied,
+    Open: capacity - occupied
+  },
+  mediaInfos: [{
+    type: "piechart",
+    title: `${Text(capacity, "#,##0")} beds total`,
+    value: { fields: ["Occupied", "Open"] }
+  }]
+}

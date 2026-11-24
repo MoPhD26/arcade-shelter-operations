@@ -1,0 +1,22 @@
+// Shelter label
+// Profile: Labeling
+// Used in: Map Viewer and ArcGIS Pro label classes
+// Returns: Text on two lines. Shelter name, then open beds or status
+// Fields: NAME, STATUS, CAPACITY, OCCUPANCY
+
+var name = Trim(DefaultValue($feature.NAME, "Unnamed shelter"))
+var status = Upper(Trim(DefaultValue($feature.STATUS, "")))
+var capacity = $feature.CAPACITY
+var occupancy = $feature.OCCUPANCY
+
+if (status == "CLOSED") {
+  return name + TextFormatting.NewLine + "Closed"
+}
+
+if (IsEmpty(capacity) || capacity <= 0 || IsEmpty(occupancy)) {
+  return name
+}
+
+var openBeds = Max(capacity - occupancy, 0)
+var bedWord = IIf(openBeds == 1, " bed open", " beds open")
+return name + TextFormatting.NewLine + Text(openBeds, "#,##0") + bedWord

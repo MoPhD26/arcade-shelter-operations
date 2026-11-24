@@ -1,0 +1,18 @@
+// Occupancy timestamp
+// Profile: Attribute rule (calculation)
+// Used in: ArcGIS Pro geodatabase, field OCC_UPDATED, triggers on insert and update
+// Returns: Date. Now when occupancy is new or changed, otherwise the existing value
+// Fields: OCCUPANCY, OCC_UPDATED
+//
+// Tells the dashboard how fresh each occupancy number is. Edits to other
+// fields, like a phone number, do not reset the clock.
+
+if ($editcontext.editType == "INSERT") {
+  return IIf(IsEmpty($feature.OCCUPANCY), null, Now())
+}
+
+if ($feature.OCCUPANCY != $originalFeature.OCCUPANCY) {
+  return Now()
+}
+
+return $feature.OCC_UPDATED

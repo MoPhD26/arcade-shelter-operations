@@ -1,0 +1,15 @@
+// Evacuation zone
+// Profile: Attribute rule (calculation)
+// Used in: ArcGIS Pro geodatabase, field ZONE_ID, triggers on insert and when the shape changes
+// Returns: Text. The evacuation zone the shelter sits in, or null
+// Data: EvacuationZones polygon feature class in the same geodatabase, field ZONE_ID
+//
+// Flags shelters that sit inside an evacuation zone, which should never be used.
+
+var zones = FeatureSetByName($datastore, "EvacuationZones", ["ZONE_ID"], false)
+var zone = First(Intersects(zones, $feature))
+
+if (IsEmpty(zone)) {
+  return null
+}
+return zone.ZONE_ID

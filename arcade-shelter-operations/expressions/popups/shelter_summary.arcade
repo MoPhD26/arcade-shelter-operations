@@ -1,0 +1,29 @@
+// Shelter summary
+// Profile: Popup element (Arcade content)
+// Used in: Map Viewer popups and ArcGIS Field Maps
+// Returns: Dictionary. A rich text popup element with a color coded occupancy line
+// Fields: NAME, STATUS, CAPACITY, OCCUPANCY, SHELTER_TYPE
+
+var name = Trim(DefaultValue($feature.NAME, "Unnamed shelter"))
+var status = Trim(DefaultValue($feature.STATUS, "Unknown"))
+var shelterType = Trim(DefaultValue($feature.SHELTER_TYPE, "General"))
+var capacity = $feature.CAPACITY
+var occupancy = $feature.OCCUPANCY
+
+var occupancyLine = "Occupancy not reported"
+if (!IsEmpty(capacity) && capacity > 0 && !IsEmpty(occupancy)) {
+  var pct = Round(occupancy / capacity * 100, 0)
+  var color = When(pct >= 90, "#B03A2E", pct >= 60, "#CA6F1E", "#1E8449")
+  var openBeds = Max(capacity - occupancy, 0)
+  occupancyLine = `<span style="color:${color}"><b>${pct}% full</b></span>, ` +
+    `${Text(openBeds, "#,##0")} of ${Text(capacity, "#,##0")} beds open`
+}
+
+var html = `<p style="font-size:16px"><b>${name}</b></p>` +
+  `<p>${shelterType} shelter. Status: <b>${status}</b></p>` +
+  `<p>${occupancyLine}</p>`
+
+return {
+  type: "text",
+  text: html
+}

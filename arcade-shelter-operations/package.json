@@ -1,0 +1,18 @@
+{
+  "name": "arcade-shelter-operations",
+  "version": "1.0.0",
+  "description": "Tested ArcGIS Arcade expressions for emergency shelter operations: maps, popups, Field Maps forms, attribute rules, and dashboards.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "author": "Mogahid Hussein",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test --test-force-exit --test-reporter=spec \"test/*.test.mjs\"",
+    "catalog": "node scripts/build-catalog.mjs",
+    "check-catalog": "node scripts/build-catalog.mjs --check"
+  },
+  "devDependencies": {
+    "@arcgis/core": "^5.2.8"
+  }
+}

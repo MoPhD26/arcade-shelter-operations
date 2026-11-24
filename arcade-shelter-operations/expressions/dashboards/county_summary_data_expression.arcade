@@ -1,0 +1,53 @@
+// County summary
+// Profile: Dashboard data expression
+// Used in: ArcGIS Dashboards, as the data source for a table or serial chart
+// Returns: FeatureSet. One row per county with shelters, beds, and percent full
+// Data: Shelters hosted feature layer (replace the item ID below)
+//
+// Closed shelters are excluded so the numbers reflect beds people can use.
+
+var shelters = FeatureSetByPortalItem(
+  Portal("https://www.arcgis.com"),
+  "REPLACE_WITH_SHELTERS_ITEM_ID",
+  0,
+  ["COUNTY", "STATUS", "CAPACITY", "OCCUPANCY"],
+  false
+)
+
+var active = Filter(shelters, "STATUS <> 'Closed'")
+
+var byCounty = GroupBy(active, ["COUNTY"], [
+  { name: "SHELTERS", expression: "1", statistic: "COUNT" },
+  { name: "CAPACITY", expression: "CAPACITY", statistic: "SUM" },
+  { name: "OCCUPANCY", expression: "OCCUPANCY", statistic: "SUM" }
+])
+
+var result = {
+  fields: [
+    { name: "COUNTY", type: "esriFieldTypeString" },
+    { name: "SHELTERS", type: "esriFieldTypeInteger" },
+    { name: "CAPACITY", type: "esriFieldTypeInteger" },
+    { name: "OCCUPANCY", type: "esriFieldTypeInteger" },
+    { name: "BEDS_OPEN", type: "esriFieldTypeInteger" },
+    { name: "PCT_FULL", type: "esriFieldTypeDouble" }
+  ],
+  geometryType: "",
+  features: []
+}
+
+for (var row in OrderBy(byCounty, "COUNTY ASC")) {
+  var cap = row.CAPACITY
+  var occ = row.OCCUPANCY
+  Push(result.features, {
+    attributes: {
+      COUNTY: row.COUNTY,
+      SHELTERS: row.SHELTERS,
+      CAPACITY: cap,
+      OCCUPANCY: occ,
+      BEDS_OPEN: Max(cap - occ, 0),
+      PCT_FULL: IIf(cap > 0, Round(occ / cap * 100, 1), null)
+    }
+  })
+}
+
+return FeatureSet(result)

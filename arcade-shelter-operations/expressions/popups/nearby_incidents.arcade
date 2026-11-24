@@ -1,0 +1,30 @@
+// Nearby incidents
+// Profile: Popup
+// Used in: Map Viewer popups on the shelter layer
+// Returns: Text. Count of active incidents within 2 km, broken down by category
+// Data: Incidents layer in the same map, with a CATEGORY field
+//
+// Uses a geodetic buffer so the 2 km radius is correct in Web Mercator maps.
+
+var searchKm = 2
+var incidents = FeatureSetByName($map, "Incidents", ["CATEGORY"], true)
+var nearby = Intersects(incidents, BufferGeodetic($feature, searchKm, "kilometers"))
+var total = Count(nearby)
+
+if (total == 0) {
+  return `No active incidents within ${searchKm} km`
+}
+
+var byCategory = OrderBy(
+  GroupBy(nearby, ["CATEGORY"], [{ name: "N", expression: "1", statistic: "COUNT" }]),
+  "N DESC, CATEGORY ASC"
+)
+
+var lines = []
+for (var row in byCategory) {
+  Push(lines, `  ${Proper(row.CATEGORY)}: ${row.N}`)
+}
+
+var noun = IIf(total == 1, "incident", "incidents")
+return `${total} active ${noun} within ${searchKm} km` + TextFormatting.NewLine +
+  Concatenate(lines, TextFormatting.NewLine)

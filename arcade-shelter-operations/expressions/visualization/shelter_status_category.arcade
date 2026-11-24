@@ -1,0 +1,28 @@
+// Shelter status category
+// Profile: Visualization
+// Used in: Map Viewer and ArcGIS Pro, unique values symbology
+// Returns: Text. One of Available, Filling, At capacity, Closed, Check data
+// Fields: STATUS, CAPACITY, OCCUPANCY
+//
+// Styles every shelter by how full it is, so a dispatcher can see at a glance
+// where to send people. Bad records get their own symbol instead of hiding
+// inside a normal category.
+
+var status = Upper(Trim(DefaultValue($feature.STATUS, "")))
+var capacity = $feature.CAPACITY
+var occupancy = $feature.OCCUPANCY
+
+if (status == "CLOSED") {
+  return "Closed"
+}
+
+if (IsEmpty(capacity) || capacity <= 0 || IsEmpty(occupancy) || occupancy < 0 || occupancy > capacity) {
+  return "Check data"
+}
+
+var share = occupancy / capacity
+return When(
+  share >= 0.9, "At capacity",
+  share >= 0.6, "Filling",
+  "Available"
+)

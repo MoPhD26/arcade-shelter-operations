@@ -1,0 +1,9 @@
+// Closure reason visibility
+// Profile: Form constraint
+// Used in: Field Maps smart forms, visibility rule for the CLOSURE_REASON field
+// Returns: Boolean. True shows the field
+// Fields: STATUS
+//
+// Only ask for a closure reason when the shelter is closed, so the form stays short.
+
+return Upper(Trim(DefaultValue($feature.STATUS, ""))) == "CLOSED"

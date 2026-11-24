@@ -1,0 +1,21 @@
+// Inspection due
+// Profile: Form calculation
+// Used in: Field Maps smart forms, read only INSPECTION_STATUS field
+// Returns: Text. Never inspected, Overdue, Due in N days, or Current
+// Fields: LAST_INSPECTED
+//
+// Shelters are inspected once a year. Flags anything due in the next 30 days.
+
+var last = $feature.LAST_INSPECTED
+if (IsEmpty(last)) {
+  return "Never inspected"
+}
+
+var due = DateAdd(Date(last), 1, "years")
+var daysLeft = DateDiff(due, Now(), "days")
+
+return When(
+  daysLeft < 0, "Overdue",
+  daysLeft <= 30, `Due in ${Ceil(daysLeft)} days`,
+  "Current"
+)

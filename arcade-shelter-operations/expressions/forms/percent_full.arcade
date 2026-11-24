@@ -1,0 +1,14 @@
+// Percent full
+// Profile: Form calculation
+// Used in: Field Maps and Map Viewer smart forms, calculated value for PCT_FULL
+// Returns: Number from 0 to 100, or null when inputs are missing
+// Fields: CAPACITY, OCCUPANCY
+
+var capacity = $feature.CAPACITY
+var occupancy = $feature.OCCUPANCY
+
+if (IsEmpty(capacity) || capacity <= 0 || IsEmpty(occupancy) || occupancy < 0) {
+  return null
+}
+
+return Min(Round(occupancy / capacity * 100, 0), 100)

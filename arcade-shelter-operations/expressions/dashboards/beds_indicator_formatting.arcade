@@ -1,0 +1,27 @@
+// Beds in use indicator
+// Profile: Dashboard advanced formatting (indicator)
+// Used in: ArcGIS Dashboards indicator with statistics sum_CAPACITY and sum_OCCUPANCY
+// Returns: Dictionary of indicator display properties
+// Fields: $datapoint.sum_CAPACITY, $datapoint.sum_OCCUPANCY
+
+var capacity = $datapoint.sum_CAPACITY
+var occupancy = $datapoint.sum_OCCUPANCY
+
+if (IsEmpty(capacity) || capacity <= 0 || IsEmpty(occupancy)) {
+  return { noValue: true }
+}
+
+var pct = Round(occupancy / capacity * 100, 0)
+var openBeds = Max(capacity - occupancy, 0)
+var color = When(pct >= 90, "#B03A2E", pct >= 60, "#CA6F1E", "#1E8449")
+
+return {
+  topText: "Shelter beds in use",
+  topTextMaxSize: "medium",
+  middleText: `${pct}%`,
+  middleTextColor: color,
+  middleTextMaxSize: "large",
+  bottomText: `${Text(openBeds, "#,##0")} beds open of ${Text(capacity, "#,##0")}`,
+  bottomTextMaxSize: "small",
+  noValue: false
+}
